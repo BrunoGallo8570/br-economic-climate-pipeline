@@ -1,0 +1,23 @@
+# Dados e banco
+data/
+*.duckdb
+
+# Ambiente Python
+.venv/
+__pycache__/
+*.pyc
+
+# Airflow
+logs/
+airflow.db
+airflow.cfg
+
+# Segredos
+.env
+
+# dbt
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/logs/
+
+
