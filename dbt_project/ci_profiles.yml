@@ -1,0 +1,7 @@
+dbt_project:
+  outputs:
+    ci:
+      type: duckdb
+      path: ':memory:'
+      threads: 4
+  target: ci

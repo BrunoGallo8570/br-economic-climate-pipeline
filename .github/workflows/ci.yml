@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-python:
+    name: Lint Python (flake8)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install flake8
+
+      - name: Run flake8
+        run: flake8 extract/ dags/ --max-line-length=120 --extend-ignore=E203,W503
+
+  validate-dbt:
+    name: Validate dbt models (parse + compile)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install dbt-duckdb click==8.2.1
+
+      - name: Install dbt packages
+        working-directory: dbt_project
+        run: dbt deps
+
+      - name: Parse dbt project (validates refs, sources, syntax)
+        working-directory: dbt_project
+        run: dbt parse --profiles-dir . --profile dbt_project
+
+  validate-dag:
+    name: Validate Airflow DAG import
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Airflow
+        run: pip install apache-airflow==2.10.4 click==8.2.1
+
+      - name: Validate DAG has no import errors
+        run: |
+          python3 -c "
+          import sys
+          sys.path.insert(0, 'dags')
+          import pipeline_clima
+          print('DAG importada com sucesso:', pipeline_clima.dag.dag_id)
+          "
