@@ -1,0 +1,18 @@
+{
+    "workbench.editorAssociations": {
+        "*.parquet": "duckdb.dataFileViewer",
+        "*.csv": "duckdb.dataFileViewer",
+        "*.tsv": "duckdb.dataFileViewer",
+        "*.xlsx": "duckdb.dataFileViewer"
+    },
+    "duckdb.databases": [
+        {
+            "alias": "pipeline",
+            "type": "file",
+            "path": "/home/bruno/data-pipeline-br/data/pipeline.duckdb",
+            "attached": false,
+            "readOnly": false
+        }
+    ],
+    "duckdb.defaultDatabase": "pipeline"
+}

@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: stg_clima
+    description: "Dados climáticos horários limpos e tipados, uma linha por estação/hora."
+    columns:
+      - name: estacao_codigo
+        description: "Código WMO da estação meteorológica."
+        tests:
+          - not_null
+      - name: data_referencia
+        description: "Data da medição."
+        tests:
+          - not_null
+      - name: temperatura_c
+        description: "Temperatura do ar em graus Celsius."
+      - name: uf
+        description: "Unidade federativa da estação."
+        tests:
+          - not_null

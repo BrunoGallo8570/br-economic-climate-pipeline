@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: mart_clima_diario
+    description: "Resumo diário de indicadores climáticos por estação meteorológica: temperatura, precipitação, umidade e vento."
+    columns:
+      - name: estacao_codigo
+        description: "Código WMO da estação."
+        tests:
+          - not_null
+      - name: data_referencia
+        description: "Data de referência do resumo."
+        tests:
+          - not_null
+      - name: temperatura_media_c
+        description: "Temperatura média do dia em graus Celsius."
+      - name: precipitacao_total_mm
+        description: "Precipitação total acumulada no dia, em milímetros."
+      - name: horas_registradas
+        description: "Quantidade de horas com registro válido naquele dia (máximo esperado: 24)."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - estacao_codigo
+              - data_referencia
