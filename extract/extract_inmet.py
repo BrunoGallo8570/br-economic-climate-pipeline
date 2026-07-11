@@ -1,11 +1,13 @@
 import zipfile
-import re
+import os
+import requests
 import pandas as pd
 import duckdb
-from pathlib import Path
 from datetime import datetime
 
-ZIP_PATH = "tmp_inmet/2023.zip"
+YEAR = 2023
+ZIP_URL = f"https://portal.inmet.gov.br/uploads/dadoshistoricos/{YEAR}.zip"
+ZIP_PATH = f"tmp_inmet/{YEAR}.zip"
 DB_PATH = "data/pipeline.duckdb"
 
 COLUMN_RENAME = {
@@ -18,6 +20,20 @@ COLUMN_RENAME = {
     "VENTO, VELOCIDADE HORARIA (m/s)": "vento_ms",
 }
 
+def ensure_zip_downloaded():
+    os.makedirs("tmp_inmet", exist_ok=True)
+    if os.path.exists(ZIP_PATH):
+        print(f"Arquivo {ZIP_PATH} ja existe, pulando download.")
+        return
+    print(f"Baixando {ZIP_URL} ...")
+    headers = {"User-Agent": "Mozilla/5.0"}
+    with requests.get(ZIP_URL, headers=headers, stream=True) as r:
+        r.raise_for_status()
+        with open(ZIP_PATH, "wb") as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+    print("Download concluido.")
+
 def parse_station_file(f, filename):
     meta_lines = [f.readline().decode("latin-1") for _ in range(8)]
     metadata = {}
@@ -25,9 +41,7 @@ def parse_station_file(f, filename):
         key, value = line.strip().split(";", 1)
         metadata[key.replace(":", "").strip()] = value
 
-    df = pd.read_csv(
-        f, sep=";", decimal=",", encoding="latin-1", skiprows=0
-    )
+    df = pd.read_csv(f, sep=";", decimal=",", encoding="latin-1", skiprows=0)
     df = df.rename(columns=COLUMN_RENAME)
     keep_cols = list(COLUMN_RENAME.values())
     df = df[[c for c in keep_cols if c in df.columns]]
@@ -43,6 +57,8 @@ def parse_station_file(f, filename):
     return df
 
 def main():
+    ensure_zip_downloaded()
+
     con = duckdb.connect(DB_PATH)
     con.execute("CREATE SCHEMA IF NOT EXISTS bronze")
     con.execute("DROP TABLE IF EXISTS bronze.clima_raw")

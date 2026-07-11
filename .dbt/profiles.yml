@@ -1,0 +1,7 @@
+dbt_project:
+  outputs:
+    dev:
+      type: duckdb
+      path: /opt/airflow/data/pipeline.duckdb
+      threads: 4
+  target: dev
