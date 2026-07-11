@@ -21,3 +21,4 @@ dbt_project/dbt_packages/
 dbt_project/logs/
 
 
+tmp_inmet/
