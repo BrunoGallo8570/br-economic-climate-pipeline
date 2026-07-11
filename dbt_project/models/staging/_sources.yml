@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: bronze
+    schema: bronze
+    tables:
+      - name: clima_raw
+        description: "Dados brutos horários de estações meteorológicas automáticas do INMET."
