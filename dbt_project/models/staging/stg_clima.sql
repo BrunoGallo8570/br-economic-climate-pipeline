@@ -6,6 +6,7 @@ select
     latitude,
     longitude,
     altitude,
+    ano_referencia,
     strptime(data, '%Y/%m/%d')::date as data_referencia,
     cast(replace(hora_utc, ' UTC', '') as integer) as hora_utc,
     precipitacao_mm,
